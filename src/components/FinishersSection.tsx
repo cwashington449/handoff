@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Heart, DollarSign, ArrowRight, Star } from 'lucide-react';
+import { LeadCaptureForm } from './LeadCaptureForm';
+import { analytics } from '@/lib/analytics';
 
 export function FinishersSection() {
   return (
@@ -109,14 +111,22 @@ export function FinishersSection() {
           </div>
         </div>
 
-        <div className="text-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          >
-            Apply to Become a Finisher
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          <div className="text-center md:text-left">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              onClick={() => analytics.buttonClick('apply_finisher', 'finishers_section')}
+            >
+              Apply to Become a Finisher
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+          <LeadCaptureForm 
+            type="finisher"
+            title="Join Our Developer Network"
+            description="Apply to become a vetted finisher and work on exciting, well-scoped projects."
+          />
         </div>
       </div>
     </section>

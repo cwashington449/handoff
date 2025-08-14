@@ -1,5 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ProjectScopingWizard } from './ProjectScopingWizard';
+import { analytics } from '@/lib/analytics';
 
 export function FinalCTASection() {
   return (
@@ -24,22 +27,21 @@ export function FinalCTASection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          >
-            Finish My Project
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <div className="[&>button]:bg-white [&>button]:text-blue-600 [&>button]:hover:bg-gray-100">
+            <ProjectScopingWizard />
+          </div>
           
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          >
-            Finish Projects
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link to="/finishers">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              onClick={() => analytics.buttonClick('become_finisher_cta', 'final_cta_section')}
+            >
+              Become a Finisher
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
 
         <div className="mt-12 text-white/80">

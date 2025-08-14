@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ArrowRight, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ProjectScopingWizard } from './ProjectScopingWizard';
+import { analytics } from '@/lib/analytics';
 
 export function HeroSection() {
   return (
@@ -28,36 +32,51 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <Button 
-              size="lg" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              Finish My Project
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <ProjectScopingWizard />
             
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              Finish Projects
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/finishers">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => analytics.buttonClick('become_finisher', 'hero_section')}
+              >
+                Become a Finisher
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Hero Video/Animation Placeholder */}
           <div className="relative max-w-4xl mx-auto">
-            <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-4 mx-auto">
-                    <Play className="h-8 w-8 text-blue-600 ml-1" />
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="cursor-pointer aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-2xl overflow-hidden hover:shadow-3xl transition-shadow">
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-4 mx-auto hover:scale-110 transition-transform">
+                        <Play className="h-8 w-8 text-blue-600 ml-1" />
+                      </div>
+                      <p className="text-gray-600 font-medium">Watch how handoff transforms ideas into reality</p>
+                    </div>
                   </div>
-                  <p className="text-gray-600 font-medium">Watch how handoff transforms ideas into reality</p>
                 </div>
-              </div>
-            </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Play className="h-8 w-8 text-white ml-1" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">Demo Video Coming Soon!</h3>
+                    <p className="text-gray-300">
+                      We're creating an amazing demo to show you exactly how handoff works. 
+                      In the meantime, try our Project Scoping Wizard above!
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
             
             {/* Floating Cards */}
             <div className="absolute -top-4 -left-4 bg-white p-4 rounded-lg shadow-lg transform rotate-3 hidden lg:block">

@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Lightbulb, Shield, Users, ArrowRight } from 'lucide-react';
+import { LeadCaptureForm } from './LeadCaptureForm';
+import { analytics } from '@/lib/analytics';
 
 export function CreatorsSection() {
   return (
@@ -95,14 +97,22 @@ export function CreatorsSection() {
           </div>
         </div>
 
-        <div className="text-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          >
-            Bring Your Project to Life
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          <div className="text-center md:text-left">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              onClick={() => analytics.buttonClick('bring_project_to_life', 'creators_section')}
+            >
+              Bring Your Project to Life
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+          <LeadCaptureForm 
+            type="creator"
+            title="Ready to Get Started?"
+            description="Join our waitlist and be among the first to access handoff when we launch."
+          />
         </div>
       </div>
     </section>
