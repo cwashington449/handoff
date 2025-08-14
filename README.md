@@ -6,7 +6,7 @@ Handoff is a modern platform that connects creative visionaries with skilled dev
 
 ## 🚀 Live Demo
 
-[View Live Site](https://your-netlify-url.netlify.app) _(Deploy to get your URL)_
+[View Live Site](https://handoff-cw.netlify.app) 
 
 ## 📋 Table of Contents
 
