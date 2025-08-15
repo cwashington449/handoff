@@ -27,7 +27,7 @@ export function FinalCTASection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-          <div className="[&>button]:bg-white [&>button]:text-blue-600 [&>button]:hover:bg-gray-100">
+          <div className="[&>button]:bg-white [&>button]:text-gray-900 [&>button]:hover:bg-gray-100 [&>button]:font-semibold [&>button]:shadow-lg [&>button]:border-0">
             <ProjectScopingWizard />
           </div>
           
@@ -35,7 +35,7 @@ export function FinalCTASection() {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               onClick={() => analytics.buttonClick('become_finisher_cta', 'final_cta_section')}
             >
               Become a Finisher
