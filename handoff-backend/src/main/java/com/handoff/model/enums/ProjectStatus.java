@@ -1,4 +1,4 @@
-    package com.handoff.model.enums;
+package com.handoff.model.enums;
 
 public enum ProjectStatus {
     DRAFT,
