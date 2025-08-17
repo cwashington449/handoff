@@ -66,16 +66,6 @@
             <artifactId>hypersistence-utils-hibernate-60</artifactId>
             <version>${hypersistence.version}</version>
         </dependency>
-        <!-- Testcontainers runtime for local profile -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
-        </dependency>
 
         <!-- JWT -->
         <dependency>
@@ -146,28 +136,16 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- Spring Boot convenience auto‑config for Testcontainers (3.1+) -->
+        <!-- Spring Boot convenience auto‑config for Testcontainers (needed at compile time for @ServiceConnection) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- Testcontainers + JUnit 5 integration -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- Pick the modules you need (PostgreSQL shown) -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>test</scope>
+            <version>${testcontainers.version}</version>
         </dependency>
     </dependencies>
 
@@ -181,6 +159,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off
+                    </argLine>
+                </configuration>
                 <version>3.2.5</version>
             </plugin>
             <plugin>
