@@ -5,19 +5,19 @@ import com.handoff.model.dto.request.ProjectUpdateRequest;
 import com.handoff.model.dto.response.ProjectResponse;
 import com.handoff.model.entity.Project;
 import com.handoff.model.entity.User;
-import com.handoff.model.enums.ProjectStatus;
 import com.handoff.service.ProjectService;
 import com.handoff.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -31,7 +31,7 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> create(@Valid @RequestBody ProjectCreateRequest request,
                                                   Authentication authentication) {
         User creator = userService.findByEmailOrThrow(authentication.getName());
-        Project p = projectService.create(
+        Project project = projectService.create(
                 creator,
                 request.getTitle(),
                 request.getDescription(),
@@ -44,14 +44,14 @@ public class ProjectController {
                 request.getAttachmentsJson(),
                 request.getApplicationDeadline()
         );
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + p.getId()))
-                .body(ProjectResponse.from(p));
+        return ResponseEntity.created(buildProjectLocation(project.getId()))
+                .body(ProjectResponse.from(sanitizeProject(project)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> get(@PathVariable UUID id) {
-        Project p = projectService.getOrThrow(id);
-        return ResponseEntity.ok(ProjectResponse.from(p));
+        Project project = projectService.getOrThrow(id);
+        return ResponseEntity.ok(ProjectResponse.from(project));
     }
 
     @GetMapping("/mine")
@@ -59,20 +59,7 @@ public class ProjectController {
         User me = userService.findByEmailOrThrow(authentication.getName());
         List<ProjectResponse> responses = projectService.listMine(me.getId()).stream()
                 .map(ProjectResponse::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ProjectResponse>> listByStatus(@RequestParam(name = "status", required = false) ProjectStatus status) {
-        List<Project> projects;
-        if (status != null) {
-            projects = projectService.listByStatus(status);
-        } else {
-            // default to a completed list if status omitted
-            projects = projectService.listByStatus(ProjectStatus.COMPLETED);
-        }
-        List<ProjectResponse> responses = projects.stream().map(ProjectResponse::from).toList();
+                .toList();
         return ResponseEntity.ok(responses);
     }
 
@@ -80,7 +67,7 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> update(@PathVariable UUID id,
                                                   @Valid @RequestBody ProjectUpdateRequest request,
                                                   Authentication authentication) {
-        Project p = projectService.update(
+        Project project = projectService.update(
                 id,
                 authentication.getName(),
                 request.getTitle(),
@@ -94,24 +81,27 @@ public class ProjectController {
                 request.getAttachmentsJson(),
                 request.getApplicationDeadline()
         );
-        return ResponseEntity.ok(ProjectResponse.from(p));
+        return ResponseEntity.ok(ProjectResponse.from(project));
     }
 
     @PostMapping("/{id}/publish")
     public ResponseEntity<ProjectResponse> publish(@PathVariable UUID id, Authentication authentication) {
-        Project p = projectService.publish(id, authentication.getName());
-        return ResponseEntity.ok(ProjectResponse.from(p));
+        Project project = projectService.publish(id, authentication.getName());
+        return ResponseEntity.ok(ProjectResponse.from(project));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id, Authentication authentication) {
-        projectService.delete(id, authentication.getName());
-        return ResponseEntity.noContent().build();
+    private URI buildProjectLocation(UUID id) {
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id)
+                .toUri();
     }
 
-    @PostMapping("/{id}/view")
-    public ResponseEntity<Void> incrementView(@PathVariable UUID id) {
-        projectService.incrementViewCount(id);
-        return ResponseEntity.accepted().build();
+    private Project sanitizeProject(Project project) {
+        // Example: sanitize fields to prevent XSS, e.g., using Apache Commons Text
+        project.setTitle(StringEscapeUtils.escapeHtml4(project.getTitle()));
+        project.setDescription(StringEscapeUtils.escapeHtml4(project.getDescription()));
+        // Sanitize other fields as needed
+        return project;
     }
 }
