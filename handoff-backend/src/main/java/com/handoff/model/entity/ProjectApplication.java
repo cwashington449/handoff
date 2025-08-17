@@ -40,7 +40,6 @@ public class ProjectApplication {
     @Column(length = 20, nullable = false)
     private ApplicationStatus status = ApplicationStatus.SUBMITTED;
 
-    @Lob
     @Column(name = "cover_letter")
     private String coverLetter;
 
