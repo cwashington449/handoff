@@ -23,7 +23,6 @@ import java.util.UUID;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final UserService userService;
 
     @Transactional
     public Project create(User creator,
@@ -120,7 +119,7 @@ public class ProjectService {
     @Transactional
     public void incrementViewCount(UUID id) {
         Project p = getOrThrow(id);
-        Integer current = p.getViewCount() == null ? 0 : p.getViewCount();
+        int current = p.getViewCount() == null ? 0 : p.getViewCount();
         p.setViewCount(current + 1);
         projectRepository.save(p);
     }

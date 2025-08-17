@@ -8,6 +8,5 @@ import java.util.UUID;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
     List<Message> findByProjectId(UUID projectId);
-    List<Message> findBySenderId(UUID senderId);
 }
 

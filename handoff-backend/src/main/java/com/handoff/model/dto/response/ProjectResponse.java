@@ -6,11 +6,13 @@ import com.handoff.model.enums.ProjectComplexity;
 import com.handoff.model.enums.ProjectStatus;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -49,15 +51,17 @@ public class ProjectResponse {
         if (p.getCreator() != null) {
             r.setCreatorId(p.getCreator().getId());
         }
-        r.setTitle(p.getTitle());
-        r.setDescription(p.getDescription());
+        r.setTitle(p.getTitle() != null ? StringEscapeUtils.escapeHtml4(p.getTitle()) : null);
+        r.setDescription(p.getDescription() != null ? StringEscapeUtils.escapeHtml4(p.getDescription()) : null);
         r.setRequirementsJson(p.getRequirementsJson());
         r.setBudgetMin(p.getBudgetMin());
         r.setBudgetMax(p.getBudgetMax());
-        r.setBudgetCurrency(p.getBudgetCurrency());
+        r.setBudgetCurrency(p.getBudgetCurrency() != null ? StringEscapeUtils.escapeHtml4(p.getBudgetCurrency()) : null);
         r.setComplexity(p.getComplexity());
-        r.setEstimatedTimeline(p.getEstimatedTimeline());
-        r.setRequiredSkills(p.getRequiredSkills());
+        r.setEstimatedTimeline(p.getEstimatedTimeline() != null ? StringEscapeUtils.escapeHtml4(p.getEstimatedTimeline()) : null);
+        if (p.getRequiredSkills() != null) {
+            r.setRequiredSkills(p.getRequiredSkills().stream().map(StringEscapeUtils::escapeHtml4).collect(Collectors.toSet()));
+        }
         r.setStatus(p.getStatus());
         r.setPublishedAt(p.getPublishedAt());
         r.setApplicationDeadline(p.getApplicationDeadline());
@@ -69,4 +73,3 @@ public class ProjectResponse {
         return r;
     }
 }
-

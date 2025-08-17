@@ -1,7 +1,9 @@
 package com.handoff.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.handoff.model.entity.User;
 import com.handoff.model.enums.UserRole;
+import com.handoff.model.enums.UserStatus;
 import com.handoff.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,35 @@ public class UserService {
 
         return userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public User findByIdOrThrow(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Transactional
+    public User updateProfile(String email,
+                              String firstName,
+                              String lastName,
+                              JsonNode profileJson,
+                              JsonNode preferencesJson,
+                              Set<String> skills) {
+        User u = findByEmailOrThrow(email);
+        if (firstName != null) u.setFirstName(firstName);
+        if (lastName != null) u.setLastName(lastName);
+        if (profileJson != null) u.setProfileJson(profileJson);
+        if (preferencesJson != null) u.setPreferencesJson(preferencesJson);
+        if (skills != null) u.setSkills(skills);
+        return userRepository.save(u);
+    }
+
+    @Transactional
+    public void deactivate(String email) {
+        User u = findByEmailOrThrow(email);
+        u.setStatus(UserStatus.INACTIVE);
+        userRepository.save(u);
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

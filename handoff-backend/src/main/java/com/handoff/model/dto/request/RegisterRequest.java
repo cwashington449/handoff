@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import static com.handoff.util.SanitizeUtils.cleanInput;
+
 @Data
 public class RegisterRequest {
     @Email @NotBlank
@@ -18,4 +20,11 @@ public class RegisterRequest {
     private String lastName;
     @NotNull
     private UserRole role;
+
+    public void sanitize() {
+        this.email = cleanInput(this.email);
+        this.firstName = cleanInput(this.firstName);
+        this.lastName = cleanInput(this.lastName);
+        // Do not modify password or role
+    }
 }

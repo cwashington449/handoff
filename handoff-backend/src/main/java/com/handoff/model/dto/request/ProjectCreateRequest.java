@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
+import static com.handoff.util.SanitizeUtils.cleanInput;
+import static com.handoff.util.SanitizeUtils.cleanInputSet;
+
 @Data
 public class ProjectCreateRequest {
     @NotBlank
@@ -36,5 +39,13 @@ public class ProjectCreateRequest {
     private JsonNode attachmentsJson;
 
     private Instant applicationDeadline;
-}
 
+    public void sanitize() {
+        this.title = cleanInput(this.title);
+        this.description = cleanInput(this.description);
+        this.budgetCurrency = cleanInput(this.budgetCurrency);
+        this.estimatedTimeline = cleanInput(this.estimatedTimeline);
+        this.requiredSkills = cleanInputSet(this.requiredSkills);
+        // JSON fields unchanged; dates/numbers unchanged
+    }
+}
