@@ -32,11 +32,19 @@ server:
     context-path: /api/v1
 
 ---
-# Local profile: Postgres via Testcontainers; Flyway enabled; JPA validate
+# Local profile: use external Postgres (docker-compose), Flyway enabled
 spring:
   config:
     activate:
       on-profile: local
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:handoff}}
+    username: ${DB_USERNAME:handoff}
+    password: ${DB_PASSWORD:handoff}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -65,9 +73,6 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
 
@@ -89,9 +94,6 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
 

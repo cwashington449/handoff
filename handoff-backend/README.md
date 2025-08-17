@@ -1,51 +1,55 @@
 # Handoff Backend
 
-Spring Boot 3.5.0 backend seed for the Handoff platform with JPA, JWT-based Spring Security, and CORS.
+Spring Boot 3.5.x backend for the Handoff platform with JPA, JWT-based Security, and CORS.
 
 ## Tech
-- Spring Boot 3.5.0 (Web, Data JPA, Security, Validation, Actuator)
+- Spring Boot 3.5.x (Web, Data JPA, Security, Validation, Actuator)
 - JWT (jjwt)
-- PostgreSQL + Flyway (production), H2 (dev)
+- PostgreSQL + Flyway (all profiles)
 - Springdoc OpenAPI (Swagger UI)
 
 ## Quick Start
 
 Requirements:
-- Java 17+
+- Java 21
 - Maven 3.9+
+- Docker Desktop (for local Postgres + app)
 
-Run in dev (H2 in-memory DB):
+Build the JAR:
 
-```
-mvn spring-boot:run
-```
-
-Build:
-
-```
+```bash
 mvn -DskipTests package
 ```
 
-Default URLs:
-- API base: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
-- H2 console: http://localhost:8080/h2-console (dev profile)
+Run locally with Docker Compose (Postgres 16.10 + app):
+
+```bash
+# From repo root
+docker compose up -d --build
+# Check health
+curl http://localhost:8080/api/v1/actuator/health
+```
+
+- API base: http://localhost:8080/api/v1
+- Swagger UI: http://localhost:8080/api/v1/swagger-ui/index.html
+
+The app runs with Spring profile `local` and connects to the `db` service using env vars (DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD) defined in docker-compose.yml. Flyway is enabled; JPA `ddl-auto=validate`.
 
 ## Configuration
-See src/main/resources/application.yml and application-dev.yml.
+See `src/main/resources/application.yml` for `local`, `nonprod`, and `prod` profiles.
 
 Key properties:
-- jwt.secret, jwt.expiration
-- cors.allowed-origins
-- spring.datasource.* (use Postgres in prod)
+- `jwt.secret`, `jwt.expiration`
+- `cors.allowed-origins`
+- `spring.datasource.*`
 
-## Initial API
-- POST /api/v1/auth/register
-- POST /api/v1/auth/login
-- GET  /api/v1/users/profile (requires Bearer token)
+## Testing
+Integration tests use Testcontainers (PostgreSQL 16.10) under the `test` profile.
 
-## Next Steps
-- Add Flyway migrations and switch dev to Postgres
-- Implement projects/applications/payment domains
-- Add integration tests (Testcontainers)
+```bash
+mvn test
+```
 
+## Notes
+- Local Testcontainers auto-database has been disabled; use docker-compose for local dev.
+- Flyway manages schema across all profiles; ensure migrations are up to date.
