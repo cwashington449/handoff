@@ -46,12 +46,10 @@ spring:
       minimum-idle: ${DB_POOL_MIN:2}
       connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
   jpa:
+    open-in-view: true
     hibernate:
       ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
 
@@ -70,6 +68,7 @@ spring:
       minimum-idle: ${DB_POOL_MIN:2}
       connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
   jpa:
+    open-in-view: true
     hibernate:
       ddl-auto: validate
     show-sql: false
@@ -91,6 +90,7 @@ spring:
       minimum-idle: ${DB_POOL_MIN:4}
       connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
   jpa:
+    open-in-view: true
     hibernate:
       ddl-auto: validate
     show-sql: false
