@@ -33,6 +33,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        request.sanitize();
         if (userService.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().build();
         }
@@ -44,11 +45,12 @@ public class AuthController {
                 request.getRole()
         );
         String token = jwtTokenProvider.generateToken(user.getEmail(), mapRoles(user.getRole()));
-        return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole()));
+        return ResponseEntity.ok(AuthResponse.from(user, token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        request.sanitize();
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -59,7 +61,7 @@ public class AuthController {
         }
         User user = userService.findByEmailOrThrow(request.getEmail());
         String token = jwtTokenProvider.generateToken(user.getEmail(), mapRoles(user.getRole()));
-        return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole()));
+        return ResponseEntity.ok(AuthResponse.from(user, token));
     }
 
     private List<String> mapRoles(UserRole role) {

@@ -1,0 +1,19 @@
+spring:
+  main:
+    banner-mode: off
+  jpa:
+    show-sql: false
+  datasource:
+    hikari:
+      minimum-idle: 0
+      maximum-pool-size: 4
+      idle-timeout: 10000
+      max-lifetime: 30000
+
+logging:
+  level:
+    root: INFO
+    com.zaxxer.hikari.pool: ERROR
+    org.testcontainers: WARN
+    org.springframework.test.context: WARN
+
