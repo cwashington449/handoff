@@ -42,7 +42,7 @@ public class SecurityConfig {
     private String allowedHeaders;
 
     @Bean
-    @Profile("!dev")
+    @Profile("!local")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -65,8 +65,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("dev")
-    public SecurityFilterChain securityFilterChainDev(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
+    @Profile("local")
+    public SecurityFilterChain securityFilterChainLocal(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
@@ -102,9 +102,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
