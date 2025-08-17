@@ -15,56 +15,40 @@ cors:
   allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
   allowed-headers: "*"
 
-# Actuator minimal exposure
 management:
   endpoints:
     web:
       exposure:
         include: health,info
 
-# Logging
 logging:
   level:
     com.handoff: INFO
     org.springframework.security: INFO
 
-# Server
 server:
   port: 8080
   servlet:
     context-path: /api/v1
 
 ---
-# Local profile: in-memory H2 with JPA
+# Local profile: Postgres via Testcontainers; Flyway enabled; JPA validate
 spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    url: jdbc:h2:mem:handoff;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_ON_ERROR=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS handoff;
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    enabled: false
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
+    enabled: true
 
 ---
-# Nonprod profile: PostgreSQL with JPA
+# Nonprod profile: PostgreSQL with Flyway
 spring:
   config:
     activate:
@@ -83,12 +67,12 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
 
 ---
-# Prod profile: PostgreSQL with JPA
+# Prod profile: PostgreSQL with Flyway
 spring:
   config:
     activate:
@@ -107,7 +91,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
 
