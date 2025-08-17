@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: handoff-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+# JWT defaults
+jwt:
+  secret: ${JWT_SECRET:change-this-secret-please}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# CORS defaults
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.handoff: INFO
+    org.springframework.security: INFO
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+---
+# Local profile: Postgres via Testcontainers; Flyway enabled; JPA validate
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+
+---
+# Nonprod profile: PostgreSQL with Flyway
+spring:
+  config:
+    activate:
+      on-profile: nonprod
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:handoff}}
+    username: ${DB_USERNAME:handoff}
+    password: ${DB_PASSWORD:handoff}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+
+---
+# Prod profile: PostgreSQL with Flyway
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:20}
+      minimum-idle: ${DB_POOL_MIN:4}
+      connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    com.handoff: INFO
+    org.springframework.security: WARN
