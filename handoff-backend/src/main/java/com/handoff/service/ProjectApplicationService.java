@@ -3,7 +3,6 @@ package com.handoff.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.handoff.exception.BadRequestException;
 import com.handoff.exception.ForbiddenException;
-import com.handoff.exception.ResourceNotFoundException;
 import com.handoff.model.entity.Project;
 import com.handoff.model.entity.ProjectApplication;
 import com.handoff.model.entity.User;
@@ -26,6 +25,7 @@ public class ProjectApplicationService {
     private final ProjectApplicationRepository applicationRepository;
     private final ProjectService projectService;
     private final UserService userService;
+    private final ProjectApplicationLookupService projectApplicationLookupService;
 
     @Transactional
     public ProjectApplication submit(UUID projectId, String finisherEmail, String coverLetter, BigDecimal bidAmount,
@@ -48,24 +48,19 @@ public class ProjectApplicationService {
         return applicationRepository.save(app);
     }
 
-    @Transactional(readOnly = true)
     public ProjectApplication getOrThrow(UUID id) {
-        return applicationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+        return projectApplicationLookupService.getOrThrow(id);
     }
 
-    @Transactional(readOnly = true)
     public List<ProjectApplication> listByProject(UUID projectId, String requesterEmail) {
         Project project = projectService.getOrThrow(projectId);
         User requester = getUserOrThrow(requesterEmail);
         requireCreator(project, requester, "Only the project creator can view applications");
-        return applicationRepository.findByProjectId(projectId);
+        return projectApplicationLookupService.listByProject(projectId);
     }
 
-    @Transactional(readOnly = true)
     public List<ProjectApplication> listMine(String finisherEmail) {
-        User finisher = userService.findByEmailOrThrow(finisherEmail);
-        return applicationRepository.findByFinisherId(finisher.getId());
+        return projectApplicationLookupService.listMine(finisherEmail);
     }
 
     @Transactional

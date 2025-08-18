@@ -16,4 +16,5 @@ logging:
     com.zaxxer.hikari.pool: ERROR
     org.testcontainers: WARN
     org.springframework.test.context: WARN
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
 

@@ -3,6 +3,37 @@ spring:
     name: handoff-backend
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 minutes default TTL
+  session:
+    redis:
+      namespace: handoff:sessions
+    timeout: 86400s # 1 day
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:handoff}}
+    username: ${DB_USERNAME:handoff}
+    password: ${DB_PASSWORD:handoff}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
 
 # JWT defaults
 jwt:
@@ -30,27 +61,6 @@ server:
   port: 8080
   servlet:
     context-path: /api/v1
-
----
-# Local profile: use external Postgres (docker-compose), Flyway enabled
-spring:
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:handoff}}
-    username: ${DB_USERNAME:handoff}
-    password: ${DB_PASSWORD:handoff}
-    hikari:
-      maximum-pool-size: ${DB_POOL_MAX:10}
-      minimum-idle: ${DB_POOL_MIN:2}
-      connection-timeout: ${DB_CONN_TIMEOUT_MS:30000}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-  flyway:
-    enabled: true
 
 ---
 # Nonprod profile: PostgreSQL with Flyway
@@ -98,3 +108,4 @@ logging:
   level:
     com.handoff: INFO
     org.springframework.security: WARN
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR

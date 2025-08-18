@@ -2,7 +2,6 @@ package com.handoff.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.handoff.exception.ForbiddenException;
-import com.handoff.exception.ResourceNotFoundException;
 import com.handoff.model.entity.Message;
 import com.handoff.model.entity.Project;
 import com.handoff.model.entity.User;
@@ -23,6 +22,7 @@ public class MessageService {
     private final ProjectService projectService;
     private final UserService userService;
     private final ProjectApplicationRepository applicationRepository;
+    private final MessageLookupService messageLookupService;
 
     private boolean canAccessProject(Project project, User user) {
         return (project.getCreator() != null && project.getCreator().getId().equals(user.getId()))
@@ -48,22 +48,13 @@ public class MessageService {
         return messageRepository.save(m);
     }
 
-    @Transactional(readOnly = true)
+    // Delegate to lookup service
     public List<Message> listByProject(UUID projectId, String requesterEmail) {
-        Project project = projectService.getOrThrow(projectId);
-        User requester = userService.findByEmailOrThrow(requesterEmail);
-        checkProjectAccess(project, requester, "Not allowed to view messages for this project");
-        return messageRepository.findByProjectId(projectId);
+        return messageLookupService.listByProject(projectId, requesterEmail);
     }
 
-    @Transactional(readOnly = true)
     public Message getOrThrow(UUID id, String requesterEmail) {
-        Message m = messageRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
-        Project project = m.getProject();
-        User requester = userService.findByEmailOrThrow(requesterEmail);
-        checkProjectAccess(project, requester, "Not allowed to view this message");
-        return m;
+        return messageLookupService.getOrThrow(id, requesterEmail);
     }
 
     @Transactional

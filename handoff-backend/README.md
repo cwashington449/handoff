@@ -1,22 +1,53 @@
 # Handoff Backend
 
-Spring Boot 3.5.x backend for the Handoff platform with JPA, JWT-based Security, and CORS.
+Spring Boot 3.5.x backend for the Handoff platform with JPA, JWT-based Security, CORS, and Redis-based caching/session management.
 
 ## Tech
 - Spring Boot 3.5.x (Web, Data JPA, Security, Validation, Actuator)
 - JWT (jjwt)
 - PostgreSQL + Flyway (all profiles)
+- Redis (caching, session management)
 - Springdoc OpenAPI (Swagger UI)
 
-## URLs
-- API base: http://localhost:8080/api/v1
-- Swagger UI: http://localhost:8080/api/v1/swagger-ui/index.html
-- Health: http://localhost:8080/api/v1/actuator/health
+## Redis Caching & Session Management
+The backend uses Redis for:
+- Caching frequently accessed data (e.g., user/project lookups)
+- HTTP session management (if enabled)
 
-## Requirements
-- Java 21
-- Maven 3.9+
-- Docker Desktop (optional: for local Postgres + containerized app)
+### Setup
+- Ensure Redis is running (default: localhost:6379). Docker Compose includes a Redis service for local dev.
+- Configuration is in `application.yml` (see `spring.cache.*` and `spring.session.*`).
+- No code changes are needed for session management if using Spring Session Redis starter.
+
+### Environment Variables
+- `REDIS_HOST` (default: localhost)
+- `REDIS_PORT` (default: 6379)
+
+---
+
+## API Endpoints (for Frontend Integration)
+All endpoints are prefixed with `/api/v1`.
+
+### Auth
+- `POST /auth/register` — Register a new user. **Body:** `RegisterRequest` (JSON)
+- `POST /auth/login` — Login. **Body:** `LoginRequest` (JSON)
+
+### Users
+- `GET /users/profile` — Get current user profile. **Auth required**
+- `PUT /users/profile` — Update profile. **Body:** `UserUpdateRequest` (JSON)
+- `DELETE /users/profile` — Deactivate user
+
+### Projects
+- `POST /projects` — Create project. **Body:** `ProjectCreateRequest` (JSON)
+- `GET /projects/{id}` — Get project by ID. **Path:** `id`
+- `GET /projects/mine` — List projects for current user
+- `GET /projects/status/{status}` — List projects by status. **Path:** `status`
+- `PUT /projects/{id}` — Update project. **Body:** `ProjectUpdateRequest` (JSON)
+- `POST /projects/{id}/publish` — Publish project. **Path:** `id`
+- `DELETE /projects/{id}` — Delete project. **Path:** `id`
+- `POST /projects/{id}/view` — Increment project view count. **Path:** `id`
+
+**Note:** All POST/PUT endpoints expect a JSON body (`@RequestBody`). Path variables are shown as `{param}`. Auth endpoints return JWT tokens for use in `Authorization: Bearer <token>` headers.
 
 ---
 
