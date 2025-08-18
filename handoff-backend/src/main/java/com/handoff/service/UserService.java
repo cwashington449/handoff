@@ -17,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserLookupService userLookupService;
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -41,15 +41,7 @@ public class UserService {
     }
 
     public User findByEmailOrThrow(String email) {
-
-        return userRepository.findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
-    @Transactional(readOnly = true)
-    public User findByIdOrThrow(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userLookupService.findByEmailOrThrow(email);
     }
 
     @Transactional
@@ -59,7 +51,7 @@ public class UserService {
                               JsonNode profileJson,
                               JsonNode preferencesJson,
                               Set<String> skills) {
-        User u = findByEmailOrThrow(email);
+        User u = userLookupService.findByEmailOrThrow(email);
         if (firstName != null) u.setFirstName(firstName);
         if (lastName != null) u.setLastName(lastName);
         if (profileJson != null) u.setProfileJson(profileJson);
@@ -70,13 +62,13 @@ public class UserService {
 
     @Transactional
     public void deactivate(String email) {
-        User u = findByEmailOrThrow(email);
+        User u = userLookupService.findByEmailOrThrow(email);
         u.setStatus(UserStatus.INACTIVE);
         userRepository.save(u);
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByEmailOrThrow(username);
+        User user = userLookupService.findByEmailOrThrow(username);
         Collection<? extends GrantedAuthority> authorities = rolesToAuthorities(user.getRole());
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

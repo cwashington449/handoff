@@ -3,7 +3,6 @@ package com.handoff.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.handoff.exception.ForbiddenException;
 import com.handoff.exception.InternalServerErrorException;
-import com.handoff.exception.ResourceNotFoundException;
 import com.handoff.model.entity.Project;
 import com.handoff.model.entity.User;
 import com.handoff.model.enums.ProjectStatus;
@@ -21,8 +20,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-
     private final ProjectRepository projectRepository;
+    private final ProjectLookupService projectLookupService;
 
     @Transactional
     public Project create(User creator,
@@ -56,22 +55,6 @@ public class ProjectService {
         return projectRepository.save(p);
     }
 
-    @Transactional(readOnly = true)
-    public Project getOrThrow(UUID id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Project> listMine(UUID creatorId) {
-        return projectRepository.findByCreatorId(creatorId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Project> listByStatus(ProjectStatus status) {
-        return projectRepository.findByStatus(status);
-    }
-
     @Transactional
     public Project update(UUID id,
                           String requesterEmail,
@@ -85,7 +68,7 @@ public class ProjectService {
                           Set<String> requiredSkills,
                           JsonNode attachmentsJson,
                           Instant applicationDeadline) {
-        Project p = getOrThrow(id);
+        Project p = projectLookupService.getOrThrow(id);
         ensureOwner(p, requesterEmail);
         if (title != null) p.setTitle(title);
         if (description != null) p.setDescription(description);
@@ -102,7 +85,7 @@ public class ProjectService {
 
     @Transactional
     public Project publish(UUID id, String requesterEmail) {
-        Project p = getOrThrow(id);
+        Project p = projectLookupService.getOrThrow(id);
         ensureOwner(p, requesterEmail);
         p.setStatus(ProjectStatus.OPEN);
         p.setPublishedAt(Instant.now());
@@ -111,14 +94,14 @@ public class ProjectService {
 
     @Transactional
     public void delete(UUID id, String requesterEmail) {
-        Project p = getOrThrow(id);
+        Project p = projectLookupService.getOrThrow(id);
         ensureOwner(p, requesterEmail);
         projectRepository.delete(p);
     }
 
     @Transactional
     public void incrementViewCount(UUID id) {
-        Project p = getOrThrow(id);
+        Project p = projectLookupService.getOrThrow(id);
         int current = p.getViewCount() == null ? 0 : p.getViewCount();
         p.setViewCount(current + 1);
         projectRepository.save(p);
@@ -132,5 +115,17 @@ public class ProjectService {
         if (!owner.getEmail().equalsIgnoreCase(requesterEmail)) {
             throw new ForbiddenException("Only the creator can modify the project");
         }
+    }
+
+    public List<Project> listByStatus(ProjectStatus status) {
+        return projectLookupService.listByStatus(status);
+    }
+
+    public List<Project> listMine(UUID id) {
+        return projectLookupService.listMine(id);
+    }
+
+    public Project getOrThrow(UUID id) {
+        return projectLookupService.getOrThrow(id);
     }
 }

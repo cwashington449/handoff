@@ -28,6 +28,7 @@ public class PaymentService {
     private final UserService userService;
     private final ProjectApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private final PaymentLookupService paymentLookupService;
 
     @Transactional
     public Payment create(UUID projectId, String creatorEmail, UUID payeeId, BigDecimal amount, String currency, com.fasterxml.jackson.databind.JsonNode metadataJson) {
@@ -47,28 +48,16 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    @Transactional(readOnly = true)
     public Payment getOrThrow(UUID id) {
-        return paymentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
+        return paymentLookupService.getOrThrow(id);
     }
 
-    @Transactional(readOnly = true)
     public List<Payment> listByProject(UUID projectId, String requesterEmail) {
-        Project project = projectService.getOrThrow(projectId);
-        User requester = userService.findByEmailOrThrow(requesterEmail);
-
-        if (!isAuthorized(project, requester)) {
-            throw new ForbiddenException("Not allowed to view payments for this project");
-        }
-
-        List<Payment> payments = paymentRepository.findByProjectId(projectId);
-        return isProjectCreator(project, requester) ? payments : filterPaymentsForRequester(payments, requester);
+        return paymentLookupService.listByProject(projectId, requesterEmail);
     }
 
-    @Transactional(readOnly = true)
     public List<Payment> listByStatus(PaymentStatus status) {
-        return paymentRepository.findByStatus(status);
+        return paymentLookupService.listByStatus(status);
     }
 
     @Transactional
