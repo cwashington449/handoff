@@ -503,7 +503,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 ### Technology Stack
-- **Spring Boot** team for the excellent framework
+- **Spring Boot** team for the excellent framework (@you254)
 - **React** team for the powerful UI library
 - **Tailwind CSS** for the utility-first CSS framework
 - **Radix UI** for accessible component primitives
