@@ -1,0 +1,22 @@
+# Root docker ignore to slim build context when building from repo root
+.git
+.gitignore
+**/.idea
+**/.vscode
+**/*.iml
+
+# Node modules and build output
+handoff-frontend/node_modules
+handoff-frontend/dist
+handoff-frontend/.vite
+
+# Maven/Java build outputs
+handoff-backend/target
+**/.mvn
+**/mvnw
+**/mvnw.cmd
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+
