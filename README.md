@@ -13,7 +13,7 @@ Handoff is a complete full-stack platform that connects creative visionaries ("C
 
 ## 🌟 Live Demo
 
-- **Frontend**: [Handoff Platform](https://handoff-platform.netlify.app) _(Deploy to get your URL)_
+- **Frontend**: [Handoff Platform](https://handoff-cw.netlify.app)
 - **Backend API**: `http://localhost:8080/api/v1/` _(When running locally)_
 - **API Documentation**: `http://localhost:8080/api/v1/swagger-ui/index.html`
 
@@ -492,8 +492,8 @@ chore: maintenance tasks
 ## 📞 Support & Contact
 
 - **Documentation**: Check this README and API documentation
-- **Issues**: [GitHub Issues](https://github.com/yourusername/handoff/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/handoff/discussions)
+- **Issues**: [GitHub Issues](https://github.com/cwashington449/handoff/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/cwashington449e/handoff/discussions)
 - **Email**: your-email@example.com
 
 ## 📝 License
