@@ -9,23 +9,31 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+/**
+ * Service for sending emails, including plain HTML emails and template-based emails.
+ * Uses JavaMailSender for email delivery and Thymeleaf for template processing.
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
+    // Constant for the default sender email address
+    private static final String FROM_ADDRESS = "no-reply@handoff-mvp.com";
+
+    private final JavaMailSender mailSender; // JavaMailSender instance for sending emails
+    private final TemplateEngine templateEngine; // Thymeleaf TemplateEngine for processing email templates
 
     /**
-     * Sends an email using a Thymeleaf template for the body.
+     * Sends an email with the specified recipient, subject, and HTML body content.
      *
-     * @param to       recipient email
-     * @param subject  subject line
-     * @param bodyHtml HTML body (can be a Thymeleaf template string)
-     * @throws MessagingException if sending fails
+     * @param to       The recipient's email address.
+     * @param subject  The subject of the email.
+     * @param bodyHtml The HTML content of the email body.
+     * @throws MessagingException If an error occurs while creating or sending the email.
      */
     public void sendEmail(String to, String subject, String bodyHtml) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom(FROM_ADDRESS);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(bodyHtml, true);
@@ -33,13 +41,13 @@ public class EmailService {
     }
 
     /**
-     * Renders a Thymeleaf template with variables and sends the email.
+     * Sends an email using a Thymeleaf template.
      *
-     * @param to           recipient
-     * @param subject      subject
-     * @param templateName Thymeleaf template name (in resources/templates)
-     * @param variables    context variables
-     * @throws MessagingException if sending fails
+     * @param to           The recipient's email address.
+     * @param subject      The subject of the email.
+     * @param templateName The name of the Thymeleaf template to use.
+     * @param variables    A map of variables to be passed to the template.
+     * @throws MessagingException If an error occurs while creating or sending the email.
      */
     public void sendTemplateEmail(String to, String subject, String templateName, java.util.Map<String, Object> variables) throws MessagingException {
         Context context = new Context();
@@ -48,4 +56,3 @@ public class EmailService {
         sendEmail(to, subject, html);
     }
 }
-
