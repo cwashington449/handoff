@@ -47,6 +47,10 @@ All endpoints are prefixed with `/api/v1`.
 - `DELETE /projects/{id}` — Delete project. **Path:** `id`
 - `POST /projects/{id}/view` — Increment project view count. **Path:** `id`
 
+### Email (Local/Nonprod Only)
+- `POST /email/test` — Send a test email using the Thymeleaf template. **Body:** `{ to, subject, body }` (JSON). **Requires JWT authentication.**
+  - Only enabled in `local`, `dev`, `nonprod`, or `test` profiles.
+
 **Note:** All POST/PUT endpoints expect a JSON body (`@RequestBody`). Path variables are shown as `{param}`. After logging in, include the JWT token in the `Authorization: Bearer <token>` header for all protected endpoints.
 
 ---
@@ -210,6 +214,74 @@ docker run --rm -p 8080:8080 \
   -e JAVA_OPTS="-Xms256m -Xmx512m" \
   handoff-backend:latest
 ```
+
+---
+
+## Email Service & Testing
+
+The backend includes a simple email service using Spring Boot's JavaMailSender and Thymeleaf for templated emails.
+
+### Email Service Usage
+- Service: `EmailService` (in `com.handoff.service`)
+- Supports sending plain HTML or Thymeleaf-rendered emails.
+- Example usage: inject `EmailService` and call `sendEmail(...)` or `sendTemplateEmail(...)`.
+
+### Test Email Endpoint (Local/Nonprod Only)
+- Controller: `EmailController` (in `com.handoff.controller`)
+- Endpoint: `POST /api/v1/email/test`
+- **Profiles:** Only enabled in `local`, `dev`, `nonprod`, or `test` profiles (not available in `prod`).
+- **Request Body:**
+  ```json
+  {
+    "to": "your@email.com",
+    "subject": "Test Email",
+    "body": "This is a test email body."
+  }
+  ```
+- Uses the `test-email.html` Thymeleaf template in `src/main/resources/templates`.
+- Returns 200 OK if sent, 500 if failed.
+
+### Local Email Testing with Mailtrap
+For local development, it is recommended to use [Mailtrap](https://mailtrap.io/) to safely capture and view outgoing emails without sending real messages.
+
+**Setup:**
+1. Create a free Mailtrap account and a new inbox.
+2. In your `src/main/resources/application.yml` (or via environment variables), set:
+   ```yaml
+   spring:
+     mail:
+       host: smtp.mailtrap.io
+       port: 2525
+       username: <your-mailtrap-username>
+       password: <your-mailtrap-password>
+       properties:
+         mail:
+           smtp:
+             auth: true
+             starttls:
+               enable: true
+   ```
+3. **Authenticate:** Before calling the `/api/v1/email/test` endpoint, you must log in to obtain a JWT token. Use the `/api/v1/auth/login` endpoint with valid credentials to receive a token.
+4. **Send the test email:** Use the `/api/v1/email/test` endpoint to send a test email. Include the JWT token in the `Authorization` header:
+   ```http
+   Authorization: Bearer <your-jwt-token>
+   ```
+   Example curl command:
+   ```bash
+   curl -X POST http://localhost:8080/api/v1/email/test \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <your-jwt-token>" \
+     -d '{
+       "to": "your@email.com",
+       "subject": "Test Email",
+       "body": "This is a test email body."
+     }'
+   ```
+5. Check your Mailtrap inbox to view the rendered email (including Thymeleaf variables).
+
+**Note:**
+- The `test-email.html` template is located in `src/main/resources/templates` and can be customized for your needs.
+- For production, configure your real SMTP provider in the same way.
 
 ---
 
