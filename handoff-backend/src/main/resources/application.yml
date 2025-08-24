@@ -34,6 +34,18 @@ spring:
     show-sql: true
   flyway:
     enabled: true
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your_username}
+    password: ${MAIL_PASSWORD:your_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+      from: ${MAIL_FROM:no-reply@handoff-mvp.com}
 
 # JWT defaults - Need vault or another secure way to manage secrets
 jwt:
@@ -84,6 +96,18 @@ spring:
     show-sql: false
   flyway:
     enabled: true
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your_username}
+    password: ${MAIL_PASSWORD:your_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+      from: ${MAIL_FROM:no-reply@handoff-mvp.com}
 
 ---
 # Prod profile: PostgreSQL with Flyway
@@ -105,6 +129,18 @@ spring:
     show-sql: false
   flyway:
     enabled: true
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your_username}
+    password: ${MAIL_PASSWORD:your_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+      from: ${MAIL_FROM:no-reply@handoff-mvp.com}
 
 logging:
   level:

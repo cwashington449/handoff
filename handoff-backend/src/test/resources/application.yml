@@ -1,20 +1,28 @@
 spring:
-  main:
-    banner-mode: off
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     show-sql: false
-  datasource:
-    hikari:
-      minimum-idle: 0
-      maximum-pool-size: 4
-      idle-timeout: 10000
-      max-lifetime: 30000
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 0d618da6d6ee0e
+    password: 719eb3b06c7a23
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+      from: no-reply@handoff-mvp.com
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test_jwt_secret
+  expiration: 60000
 
 logging:
   level:
-    root: INFO
-    com.zaxxer.hikari.pool: ERROR
-    org.testcontainers: WARN
-    org.springframework.test.context: WARN
-    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
-
+    root: WARN
+    com.handoff: DEBUG

@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.flyway.enabled=false",
         "spring.jpa.hibernate.ddl-auto=create-drop"
 })
-class PostgresContainerIntegrationTest {
+class PostgresContainerIT {
 
     @Container
     @ServiceConnection
